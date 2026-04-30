@@ -1,5 +1,5 @@
 package com.in5bv.rourb.entity;
 
-public enum Rol {
+public enum Role {
     ADMIN, SELLER, CLIENT;
 }

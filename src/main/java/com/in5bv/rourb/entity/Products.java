@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 public class Products {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_product")
     private Integer idProduct;
 
@@ -17,7 +17,7 @@ public class Products {
     private Integer productCode;
 
     @Column(name = "product_name")
-    private Integer productName;
+    private String productName;
 
     @Column(name = "price")
     private BigDecimal price;
@@ -53,11 +53,11 @@ public class Products {
         this.price = price;
     }
 
-    public Integer getProductName() {
+    public String getProductName() {
         return productName;
     }
 
-    public void setProductName(Integer productName) {
+    public void setProductName(String productName) {
         this.productName = productName;
     }
 

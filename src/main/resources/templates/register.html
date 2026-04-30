@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <link rel="stylesheet" th:href="@{/style.css}">
+</head>
+<body>
+<div class="card">
+    <h2>Registro Rourb</h2>
+    <form th:action="@{/register}" method="post">
+        <input type="text" name="username" placeholder="Usuario" required>
+        <input type="password" name="password" placeholder="Contraseña" required>
+        <select name="role">
+            <option value="CLIENT">Comprar (CLIENT)</option>
+            <option value="SELLER">Vender (SELLER)</option>
+        </select>
+        <button type="submit">Registrarse</button>
+        <a th:href="@{/login}">¿Ya tienes cuenta? Login</a>
+    </form>
+</div>
+</body>
+</html>

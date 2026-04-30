@@ -1,0 +1,20 @@
+<script>
+    try {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+        window.location.href = "/login";
+    }
+
+    const payloadBase64 = token.split('.')[1];
+    const payloadJson = atob(payloadBase64);
+    const payload = JSON.parse(payloadJson);
+
+    console.log("PAYLOAD:", payload);
+
+} catch (e) {
+    console.error("TOKEN INVÁLIDO:", e);
+    localStorage.removeItem("token");
+    window.location.href = "/login";
+}
+</script>

@@ -1,21 +1,26 @@
 package com.in5bv.rourb.entity;
 
 import jakarta.persistence.*;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.Collection;
+import java.util.List;
 
 @Entity
 @Table(name = "Users")
-public class Users {
+public class Users implements UserDetails {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_user")
     private Integer idUser;
 
     @Column(name = "user_code")
     private Integer userCode;
 
-    @Column(name= "username")
+    @Column(name = "username", unique = true)
     private String username;
 
     @Column(name = "encrypted_password")
@@ -26,64 +31,58 @@ public class Users {
 
     @Column(name = "rol")
     @Enumerated(EnumType.STRING)
-    private Rol rol;
+    private Role role;
 
     @Column(name = "state")
     private Boolean state;
 
-    public Boolean getState() {
-        return state;
+    //detalles de usuario o user
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
     }
 
-    public void setState(Boolean state) {
-        this.state = state;
-    }
-
-    public Rol getRol() {
-        return rol;
-    }
-
-    public void setRol(Rol rol) {
-        this.rol = rol;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getEncryptedPassword() {
+    @Override
+    public String getPassword() {
         return encryptedPassword;
     }
 
-    public void setEncryptedPassword(String encryptedPassword) {
-        this.encryptedPassword = encryptedPassword;
-    }
-
+    @Override
     public String getUsername() {
         return username;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    @Override
+    public boolean isAccountNonExpired() { return true; }
+
+    @Override
+    public boolean isAccountNonLocked() { return true; }
+
+    @Override
+    public boolean isCredentialsNonExpired() { return true; }
+
+    @Override
+    public boolean isEnabled() {
+        return state != null && state;
     }
 
-    public Integer getUserCode() {
-        return userCode;
-    }
+    public Integer getIdUser() { return idUser; }
+    public void setIdUser(Integer idUser) { this.idUser = idUser; }
 
-    public void setUserCode(Integer userCode) {
-        this.userCode = userCode;
-    }
+    public Integer getUserCode() { return userCode; }
+    public void setUserCode(Integer userCode) { this.userCode = userCode; }
 
-    public Integer getIdUser() {
-        return idUser;
-    }
+    public void setUsername(String username) { this.username = username; }
 
-    public void setIdUser(Integer idUser) {
-        this.idUser = idUser;
-    }
+    public String getEncryptedPassword() { return encryptedPassword; }
+    public void setEncryptedPassword(String encryptedPassword) { this.encryptedPassword = encryptedPassword; }
+
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
+
+    public Role getRol() { return role; }
+    public void setRol(Role role) { this.role = role; }
+
+    public Boolean getState() { return state; }
+    public void setState(Boolean state) { this.state = state; }
 }

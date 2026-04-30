@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <link rel="stylesheet" th:href="@{/style.css}">
+</head>
+<body>
+<div class="card">
+    <h2>Login Rourb</h2>
+    <form id="loginForm">
+        <input type="text" id="username" placeholder="Usuario" required>
+        <input type="password" id="password" placeholder="Contraseña" required>
+        <button type="submit">Ingresar</button>
+    </form>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+
+        document.getElementById("loginForm").addEventListener("submit", function(e) {
+            e.preventDefault();
+
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
+
+            fetch('/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password })
+            })
+            .then(res => {
+                if (!res.ok) {
+                    throw new Error("Login error: " + res.status);
+                }
+                return res.json();
+            })
+            .then(data => {
+                console.log("TOKEN:", data.token);
+
+                localStorage.setItem("token", data.token);
+
+                if (data.role === "ROLE_SELLER") {
+                    window.location.href = "/home-seller";
+                } else if (data.role === "ROLE_CLIENT") {
+                    window.location.href = "/home-client";
+                }
+            })
+            .catch(err => {
+                console.error("ERROR:", err);
+                alert("Failed login");
+            });
+
+        });
+
+    });
+</script>
+
+</body>
+</html>

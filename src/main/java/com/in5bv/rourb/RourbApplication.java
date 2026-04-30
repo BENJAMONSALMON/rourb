@@ -13,6 +13,6 @@ public class RourbApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        System.out.println("API FUNCIONANDO TEN DE TEN");
+        System.out.println("api working without bugs");
     }
 }

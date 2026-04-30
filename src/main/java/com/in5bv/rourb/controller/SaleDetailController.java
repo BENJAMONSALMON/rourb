@@ -20,7 +20,7 @@ public class SaleDetailController {
     @GetMapping
     public String list(Model model) {
         model.addAttribute("saleDetails", saleDetailService.getAllSaleDetails());
-        return "sale-detail"; // Asegúrate de que tu HTML se llame así
+        return "sale-detail";
     }
 
     @GetMapping("/action")
