@@ -43,7 +43,7 @@ public class SecurityConfig {
                                 "/login",
                                 "/register",
                                 "/style.css",
-                                "/static/css/**",
+                                "/img/**",
                                 "/js/**",
                                 "/home-seller",
                                 "/home-seller/**",
