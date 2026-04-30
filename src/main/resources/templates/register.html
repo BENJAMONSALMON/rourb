@@ -1,21 +1,37 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <link rel="stylesheet" th:href="@{/style.css}">
+    <meta charset="UTF-8">
+    <title>Registro - ROURB</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
-<div class="card">
-    <h2>Registro Rourb</h2>
-    <form th:action="@{/register}" method="post">
-        <input type="text" name="username" placeholder="Usuario" required>
-        <input type="password" name="password" placeholder="Contraseña" required>
-        <select name="role">
-            <option value="CLIENT">Comprar (CLIENT)</option>
-            <option value="SELLER">Vender (SELLER)</option>
-        </select>
-        <button type="submit">Registrarse</button>
-        <a th:href="@{/login}">¿Ya tienes cuenta? Login</a>
-    </form>
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-header">
+            <h1>JOIN THE CREW</h1>
+        </div>
+
+        <form th:action="@{/register}" method="post">
+            <div class="form-group">
+                <input type="text" name="username" class="form-input" placeholder="Usuario" required>
+            </div>
+            <div class="form-group">
+                <input type="password" name="password" class="form-input" placeholder="Contraseña" required>
+            </div>
+            <div class="form-group">
+                <select name="role" class="form-input">
+                    <option value="CLIENT">Comprar (CLIENT)</option>
+                    <option value="SELLER">Vender (SELLER)</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-secondary">Registrarse</button>
+        </form>
+
+        <div class="auth-footer" style="margin-top: 20px;">
+            <p>¿Ya tienes cuenta? <a th:href="@{/login}">Login</a></p>
+        </div>
+    </div>
 </div>
 </body>
 </html>

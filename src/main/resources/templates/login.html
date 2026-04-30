@@ -1,58 +1,58 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <link rel="stylesheet" th:href="@{/style.css}">
+    <meta charset="UTF-8">
+    <title>Login - ROURB</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
-<div class="card">
-    <h2>Login Rourb</h2>
-    <form id="loginForm">
-        <input type="text" id="username" placeholder="Usuario" required>
-        <input type="password" id="password" placeholder="Contraseña" required>
-        <button type="submit">Ingresar</button>
-    </form>
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="logo">
+            <img th:src="@{/rourb.png}" alt="Logo Rourb" style="max-width: 150px; height: auto;" />
+        </div>
+
+        <div class="auth-header">
+            <h1>WELCOME BACK</h1>
+            <p>Inicia sesión para acceder a tu cuenta</p>
+        </div>
+
+        <form id="loginForm">
+            <div class="form-group">
+                <input type="text" id="username" class="form-input" placeholder="Usuario" required>
+            </div>
+            <div class="form-group">
+                <input type="password" id="password" class="form-input" placeholder="Contraseña" required>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Ingresar</button>
+        </form>
+
+        <div class="auth-footer" style="margin-top: 20px;">
+            <p>¿No tienes cuenta? <a th:href="@{/register}">Regístrate aquí</a></p>
+        </div>
+    </div>
 </div>
 
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
+    document.getElementById("loginForm").addEventListener("submit", function(e) {
+        e.preventDefault();
+        const username = document.getElementById("username").value;
+        const password = document.getElementById("password").value;
 
-        document.getElementById("loginForm").addEventListener("submit", function(e) {
-            e.preventDefault();
-
-            const username = document.getElementById("username").value;
-            const password = document.getElementById("password").value;
-
-            fetch('/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username, password })
-            })
-            .then(res => {
-                if (!res.ok) {
-                    throw new Error("Login error: " + res.status);
-                }
-                return res.json();
-            })
-            .then(data => {
-                console.log("TOKEN:", data.token);
-
-                localStorage.setItem("token", data.token);
-
-                if (data.role === "ROLE_SELLER") {
-                    window.location.href = "/home-seller";
-                } else if (data.role === "ROLE_CLIENT") {
-                    window.location.href = "/home-client";
-                }
-            })
-            .catch(err => {
-                console.error("ERROR:", err);
-                alert("Failed login");
-            });
-
-        });
-
+        fetch('/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password })
+        })
+        .then(res => res.json())
+        .then(data => {
+            localStorage.setItem("token", data.token);
+            if (data.role === "ROLE_SELLER") window.location.href = "/home-seller";
+            else if (data.role === "ROLE_CLIENT") window.location.href = "/home-client";
+        })
+        .catch(err => alert("Login fallido"));
     });
 </script>
-
 </body>
 </html>
