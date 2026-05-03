@@ -2,36 +2,40 @@
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registro - ROURB</title>
     <link rel="stylesheet" th:href="@{/style.css}">
 </head>
 <body>
-<div class="auth-container">
-    <div class="auth-card">
-        <div class="auth-header">
-            <h1>JOIN THE CREW</h1>
+
+<div class="login-card">
+    <div class="card-left">
+        <div class="brand">
+            <h2><span>JOIN</span> THE CREW</h2>
         </div>
 
         <form th:action="@{/register}" method="post">
-            <div class="form-group">
-                <input type="text" name="username" class="form-input" placeholder="Usuario" required>
-            </div>
-            <div class="form-group">
-                <input type="password" name="password" class="form-input" placeholder="Contraseña" required>
-            </div>
-            <div class="form-group">
-                <select name="role" class="form-input">
-                    <option value="CLIENT">Comprar (CLIENT)</option>
-                    <option value="SELLER">Vender (SELLER)</option>
-                </select>
-            </div>
-            <button type="submit" class="btn btn-secondary">Registrarse</button>
-        </form>
+            <label>Usuario</label>
+            <input type="text" name="username" placeholder="Elige tu nombre de usuario o correo" required>
 
-        <div class="auth-footer" style="margin-top: 20px;">
-            <p>¿Ya tienes cuenta? <a th:href="@{/login}">Login</a></p>
-        </div>
+            <label>Contraseña</label>
+            <input type="password" name="password" placeholder="••••••••" required>
+
+            <label>Tipo de cuenta</label>
+            <select name="role" class="input-select" required>
+                <option value="CLIENT">Cliente (Comprar)</option>
+                <option value="SELLER">Vendedor (Vender)</option>
+            </select>
+
+            <button type="submit" class="btn login">Registrarse</button>
+            <button type="button" class="btn register" onclick="window.location.href='/login'">¿Ya tienes cuenta?, Inicia Sesión</button>
+        </form>
+    </div>
+
+    <div class="card-right">
+        <img th:src="@{/img/logo.png}" alt="Logo Rourb" class="central-logo">
     </div>
 </div>
+
 </body>
 </html>

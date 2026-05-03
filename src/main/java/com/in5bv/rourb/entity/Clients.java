@@ -20,8 +20,8 @@ public class Clients {
     @Column(name = "client_last_name")
     private String clientLastName;
 
-    @Column(name = "adress")
-    private String adress;
+    @Column(name = "address")
+    private String address;
 
     @Column(name = "state")
     @Enumerated(EnumType.STRING)
@@ -51,12 +51,12 @@ public class Clients {
         this.clientDpi = clientDpi;
     }
 
-    public String getAdress() {
-        return adress;
+    public String getAddress() {
+        return address;
     }
 
-    public void setAdress(String adress) {
-        this.adress = adress;
+    public void setAddress(String address) {
+        this.address = address;
     }
 
     public String getClientLastName() {

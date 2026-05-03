@@ -6,36 +6,47 @@
     <link rel="stylesheet" th:href="@{/style.css}">
 </head>
 <body>
-<div class="auth-container">
-    <div class="auth-card">
-        <div class="logo">
-            <img th:src="@{/img/logo.png}" />
 
-            <div class="auth-header">
-            <h1>WELCOME BACK</h1>
-            <p>Inicia sesión para acceder a tu cuenta</p>
+<div class="login-card">
+    <div class="card-left">
+        <div class="brand">
+            <h2><span>ROU</span><span>RB</span></h2>
+            <p class="subtitle">Bienvenido a la app</p>
         </div>
 
         <form id="loginForm">
-            <div class="form-group">
-                <input type="text" id="username" class="form-input" placeholder="Usuario" required>
-            </div>
-            <div class="form-group">
-                <input type="password" id="password" class="form-input" placeholder="Contraseña" required>
-            </div>
+            <label>Email o nombre de usuario</label>
+            <input type="text" id="username" placeholder="Ingresa tu correo o nombre de usuario" required>
 
-            <button type="submit" class="btn btn-primary">Ingresar</button>
+            <label>Contraseña</label>
+            <input type="password" id="password" placeholder="••••••••" required>
+
+            <label class="checkbox-container">
+                <input type="checkbox" id="togglePass" onclick="togglePassword()">
+                Mostrar contraseña
+            </label>
+
+            <button type="submit" class="btn login">Iniciar sesión</button>
+            <button type="button" class="btn register" onclick="window.location.href='/register'">¿No tienes cuenta?, Registrate</button>
         </form>
+    </div>
 
-        <div class="auth-footer" style="margin-top: 20px;">
-            <p>¿No tienes cuenta? <a th:href="@{/register}">Regístrate aquí</a></p>
-        </div>
+    <div class="card-right">
+        <img th:src="@{/img/logo.png}" alt="Logo Rourb" class="central-logo">
     </div>
 </div>
 
 <script>
+    // Función para alternar visibilidad de contraseña
+    function togglePassword() {
+        const pass = document.getElementById("password");
+        pass.type = (pass.type === "password") ? "text" : "password";
+    }
+
+    // Lógica de autenticación con el servidor
     document.getElementById("loginForm").addEventListener("submit", function(e) {
         e.preventDefault();
+
         const username = document.getElementById("username").value;
         const password = document.getElementById("password").value;
 
@@ -44,14 +55,21 @@
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ username, password })
         })
-        .then(res => res.json())
+        .then(res => {
+            if (!res.ok) throw new Error("Error en el login");
+            return res.json();
+        })
         .then(data => {
             localStorage.setItem("token", data.token);
-            if (data.role === "ROLE_SELLER") window.location.href = "/home-seller";
-            else if (data.role === "ROLE_CLIENT") window.location.href = "/home-client";
+            // Redirección según rol
+            window.location.href = (data.role === "ROLE_SELLER") ? "/home-seller" : "/home-client";
         })
-        .catch(err => alert("Login fallido"));
+        .catch(err => {
+            console.error(err);
+            alert("Credenciales incorrectas o error de conexión.");
+        });
     });
 </script>
+
 </body>
 </html>

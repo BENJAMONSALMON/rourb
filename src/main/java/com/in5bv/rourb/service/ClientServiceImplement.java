@@ -38,7 +38,7 @@ public class ClientServiceImplement implements ClientService {
         existing.setClientDpi(existing.getClientDpi());
         existing.setClientName(existing.getClientName());
         existing.setState(existing.getState());
-        existing.setAdress(existing.getAdress());
+        existing.setAddress(existing.getAddress());
         existing.setClientLastName(existing.getClientLastName());
         return clientRepository.save(existing);
     }
