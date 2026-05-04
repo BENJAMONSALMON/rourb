@@ -39,19 +39,19 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(
-                                "/login",
-                                "/register",
-                                "/style.css",
-                                "/img/**",
-                                "/js/**",
-                                "/home-seller",
-                                "/home-seller/**",
-                                "/home-client",
-                                "/home-client/**"
-                        ).permitAll()
-                        .anyRequest().authenticated()
-                )
+                                .requestMatchers(
+                                        "/register",
+                                        "/login",
+                                        "/api/auth/**",
+                                        "/img/**",
+                                        "/js/**",
+                                        "/home-seller/**",
+                                        "/home-client/**",
+                                        "/uploads/**"
+                                ).permitAll()
+                                .requestMatchers("/api/**").authenticated()
+                                .anyRequest().permitAll()
+                        )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

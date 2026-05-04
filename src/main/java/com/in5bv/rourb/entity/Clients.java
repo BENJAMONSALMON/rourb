@@ -11,8 +11,8 @@ public class Clients {
     @Column(name = "id_client")
     private Integer idClient;
 
-    @Column(name = "client_dpi")
-    private Integer clientDpi;
+    @Column(name = "client_dpi", unique = true, nullable = false)
+    private Long clientDpi;
 
     @Column(name = "client_name")
     private String clientName;
@@ -26,6 +26,7 @@ public class Clients {
     @Column(name = "state")
     @Enumerated(EnumType.STRING)
     private State state;
+
 
     public Integer getIdClient() {
         return idClient;
@@ -43,11 +44,11 @@ public class Clients {
         this.clientName = clientName;
     }
 
-    public Integer getClientDpi() {
+    public Long getClientDpi() {
         return clientDpi;
     }
 
-    public void setClientDpi(Integer clientDpi) {
+    public void setClientDpi(Long clientDpi) {
         this.clientDpi = clientDpi;
     }
 

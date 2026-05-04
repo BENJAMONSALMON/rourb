@@ -1,75 +1,341 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <title>Login - ROURB</title>
-    <link rel="stylesheet" th:href="@{/style.css}">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ROURB – Iniciar Sesión</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600&display=swap');
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+          --teal:   #3dbfbf;
+          --teal2:  #2aa0a0;
+          --red:    #e84040;
+          --dark:   #0a0a0a;
+          --card:   #111111;
+          --input:  #1a1a1a;
+          --border: #2a2a2a;
+          --text:   #e8e8e8;
+          --muted:  #666;
+        }
+
+        html, body {
+          height: 100%;
+          font-family: 'Outfit', sans-serif;
+        }
+
+        body {
+          min-height: 100vh;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: radial-gradient(ellipse at 20% 50%, #0d3535 0%, #061a1a 40%, #030d0d 100%);
+          overflow: hidden;
+        }
+
+        /* Animated background noise */
+        body::before {
+          content: '';
+          position: fixed;
+          inset: 0;
+          background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+          pointer-events: none;
+          opacity: 0.35;
+        }
+
+        .card {
+          position: relative;
+          background: var(--card);
+          border: 1px solid var(--border);
+          border-radius: 20px;
+          width: min(880px, 94vw);
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          overflow: hidden;
+          box-shadow: 0 40px 120px rgba(0,0,0,0.7), 0 0 0 1px rgba(61,191,191,0.05);
+          animation: fadeUp 0.6s ease both;
+        }
+
+        @keyframes fadeUp {
+          from { opacity: 0; transform: translateY(30px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* LEFT PANEL – form */
+        .panel-form {
+          padding: 52px 48px;
+          display: flex;
+          flex-direction: column;
+          gap: 24px;
+        }
+
+        .brand {
+          font-family: 'Bebas Neue', sans-serif;
+          font-size: 2.8rem;
+          letter-spacing: 4px;
+          color: var(--text);
+          line-height: 1;
+        }
+        .brand span { color: var(--teal); }
+
+        .tagline {
+          font-size: 0.75rem;
+          letter-spacing: 0.25em;
+          text-transform: uppercase;
+          color: var(--muted);
+          margin-top: -12px;
+        }
+
+        .fields { display: flex; flex-direction: column; gap: 16px; }
+
+        .field-group { display: flex; flex-direction: column; gap: 6px; }
+
+        label {
+          font-size: 0.75rem;
+          font-weight: 500;
+          letter-spacing: 0.1em;
+          text-transform: uppercase;
+          color: var(--muted);
+        }
+
+        .input-wrap {
+          position: relative;
+          display: flex;
+          align-items: center;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+          width: 100%;
+          background: var(--input);
+          border: 1px solid var(--border);
+          border-radius: 10px;
+          padding: 13px 42px 13px 16px;
+          color: var(--text);
+          font-family: 'Outfit', sans-serif;
+          font-size: 0.95rem;
+          outline: none;
+          transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        input::placeholder { color: #3a3a3a; }
+
+        input:focus {
+          border-color: var(--teal);
+          box-shadow: 0 0 0 3px rgba(61,191,191,0.12);
+        }
+
+        .toggle-pw {
+          position: absolute;
+          right: 14px;
+          background: none;
+          border: none;
+          cursor: pointer;
+          color: var(--muted);
+          display: flex;
+          align-items: center;
+          transition: color 0.2s;
+          padding: 0;
+        }
+        .toggle-pw:hover { color: var(--teal); }
+
+        .show-pw-row {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          margin-top: -4px;
+        }
+        .show-pw-row input[type="checkbox"] {
+          width: 15px; height: 15px;
+          accent-color: var(--teal);
+          cursor: pointer;
+        }
+        .show-pw-row label {
+          font-size: 0.75rem;
+          color: var(--muted);
+          cursor: pointer;
+          text-transform: none;
+          letter-spacing: 0;
+        }
+
+        .btn {
+          width: 100%;
+          padding: 14px;
+          border-radius: 10px;
+          border: none;
+          font-family: 'Outfit', sans-serif;
+          font-size: 0.9rem;
+          font-weight: 600;
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+          cursor: pointer;
+          transition: all 0.2s;
+        }
+
+        .btn-primary {
+          background: linear-gradient(135deg, var(--teal), var(--teal2));
+          color: #000;
+        }
+        .btn-primary:hover {
+          filter: brightness(1.1);
+          transform: translateY(-1px);
+          box-shadow: 0 8px 24px rgba(61,191,191,0.35);
+        }
+
+        .btn-outline {
+          background: transparent;
+          border: 1.5px solid var(--red);
+          color: var(--red);
+        }
+        .btn-outline:hover {
+          background: rgba(232,64,64,0.08);
+          transform: translateY(-1px);
+        }
+
+        .actions { display: flex; flex-direction: column; gap: 10px; margin-top: 4px; }
+
+        /* RIGHT PANEL – logo art */
+        .panel-art {
+          background: linear-gradient(145deg, #0d2828, #061515);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          position: relative;
+          overflow: hidden;
+        }
+
+        .panel-art::before {
+          content: '';
+          position: absolute;
+          inset: -40px;
+          background: radial-gradient(circle at 50% 50%, rgba(61,191,191,0.12) 0%, transparent 70%);
+        }
+
+        .panel-art img {
+          width: 75%;
+          max-width: 280px;
+          filter: drop-shadow(0 10px 40px rgba(61,191,191,0.3));
+          animation: float 4s ease-in-out infinite;
+          position: relative;
+          z-index: 1;
+        }
+
+        /* fallback if image is missing */
+        .logo-text-fallback {
+          font-family: 'Bebas Neue', sans-serif;
+          font-size: 5rem;
+          letter-spacing: 8px;
+          color: var(--teal);
+          text-shadow: 0 0 40px rgba(61,191,191,0.5), 4px 4px 0 rgba(0,0,0,0.6);
+          position: relative;
+          z-index: 1;
+          display: none;
+        }
+
+        @keyframes float {
+          0%, 100% { transform: translateY(0px) rotate(-1deg); }
+          50%       { transform: translateY(-12px) rotate(1deg); }
+        }
+
+        @media (max-width: 600px) {
+          .card { grid-template-columns: 1fr; }
+          .panel-art { height: 200px; }
+          .panel-form { padding: 36px 28px; }
+        }
+    </style>
 </head>
 <body>
 
-<div class="login-card">
-    <div class="card-left">
-        <div class="brand">
-            <h2><span>ROU</span><span>RB</span></h2>
-            <p class="subtitle">Bienvenido a la app</p>
+<div class="card">
+    <div class="panel-form">
+        <div>
+            <div class="brand">RO<span>URB</span></div>
+            <div class="tagline">Street · Culture · Style</div>
         </div>
 
-        <form id="loginForm">
-            <label>Email o nombre de usuario</label>
-            <input type="text" id="username" placeholder="Ingresa tu correo o nombre de usuario" required>
+        <div class="fields">
+            <div class="field-group">
+                <label for="usuario">Usuario</label>
+                <div class="input-wrap">
+                    <input type="text" id="usuario" placeholder="Escribe tu nombre de usuario" autocomplete="username" />
+                </div>
+            </div>
 
-            <label>Contraseña</label>
-            <input type="password" id="password" placeholder="••••••••" required>
+            <div class="field-group">
+                <label for="contrasena">Contraseña</label>
+                <div class="input-wrap">
+                    <input type="password" id="contrasena" placeholder="Escribe tu contraseña" autocomplete="current-password" />
+                    <button class="toggle-pw" type="button" onclick="togglePw()" aria-label="Mostrar/ocultar contraseña">
+                        <svg id="eye-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                            <circle cx="12" cy="12" r="3"/>
+                        </svg>
+                    </button>
+                </div>
+                <div class="show-pw-row">
+                    <input type="checkbox" id="showpw" onchange="togglePwCheckbox(this)" />
+                    <label for="showpw">Ver contraseña</label>
+                </div>
+            </div>
+        </div>
 
-            <label class="checkbox-container">
-                <input type="checkbox" id="togglePass" onclick="togglePassword()">
-                Mostrar contraseña
-            </label>
-
-            <button type="submit" class="btn login">Iniciar sesión</button>
-            <button type="button" class="btn register" onclick="window.location.href='/register'">¿No tienes cuenta?, Registrate</button>
-        </form>
+        <div class="actions">
+            <button class="btn btn-primary" onclick="login()">Iniciar Sesión</button>
+            <button class="btn btn-outline" onclick="location.href='/register'">Registrarse</button>
+        </div>
     </div>
 
-    <div class="card-right">
-        <img th:src="@{/img/logo.png}" alt="Logo Rourb" class="central-logo">
+    <div class="panel-art">
+        <img src="fondo.jpg" alt="ROURB" onerror="this.style.display='none'; document.querySelector('.logo-text-fallback').style.display='block'" />
+        <div class="logo-text-fallback">ROURB</div>
     </div>
 </div>
 
 <script>
-    // Función para alternar visibilidad de contraseña
-    function togglePassword() {
-        const pass = document.getElementById("password");
-        pass.type = (pass.type === "password") ? "text" : "password";
+    function togglePw() {
+      const input = document.getElementById('contrasena');
+      const cb    = document.getElementById('showpw');
+      input.type  = input.type === 'password' ? 'text' : 'password';
+      cb.checked  = input.type === 'text';
     }
 
-    // Lógica de autenticación con el servidor
-    document.getElementById("loginForm").addEventListener("submit", function(e) {
-        e.preventDefault();
+    function togglePwCheckbox(cb) {
+      document.getElementById('contrasena').type = cb.checked ? 'text' : 'password';
+    }
 
-        const username = document.getElementById("username").value;
-        const password = document.getElementById("password").value;
+    function login() {
+  const username = document.getElementById('usuario').value.trim();
+  const password = document.getElementById('contrasena').value;
 
-        fetch('/login', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username, password })
-        })
-        .then(res => {
-            if (!res.ok) throw new Error("Error en el login");
-            return res.json();
-        })
-        .then(data => {
-            localStorage.setItem("token", data.token);
-            // Redirección según rol
-            window.location.href = (data.role === "ROLE_SELLER") ? "/home-seller" : "/home-client";
-        })
-        .catch(err => {
-            console.error(err);
-            alert("Credenciales incorrectas o error de conexión.");
-        });
-    });
+  if (!username || !password) {
+    alert('Completa todos los campos.');
+    return;
+  }
+
+  fetch('/api/auth/login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username, password })
+  })
+  .then(res => {
+    if (!res.ok) throw new Error('Credenciales incorrectas');
+    return res.json();
+  })
+  .then(data => {
+    console.log("Respuesta login:", data);
+
+    localStorage.setItem('token', data.token);
+    localStorage.setItem('rourb_user', username);
+    localStorage.setItem('user_id', data.idUser ?? data.userId ?? data.id);
+
+    window.location.href = (data.role === 'SELLER') ? '/home-seller' : '/home-client';
+  })
+  .catch(() => {
+    alert('Credenciales incorrectas o error de conexión.');
+  });
+}
 </script>
-
 </body>
 </html>

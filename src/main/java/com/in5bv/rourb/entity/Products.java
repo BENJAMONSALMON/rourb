@@ -1,7 +1,6 @@
 package com.in5bv.rourb.entity;
 
 import jakarta.persistence.*;
-
 import java.math.BigDecimal;
 
 @Entity
@@ -23,57 +22,33 @@ public class Products {
     private BigDecimal price;
 
     @Column(name = "stock")
-    private Integer Stock;
+    private Integer stock;
 
     @Column(name = "state_product")
     @Enumerated(EnumType.STRING)
     private StateProduct stateProduct;
 
-    public Integer getIdProduct() {
-        return idProduct;
-    }
+    @Column(name = "image_url", length = 500)
+    private String imageUrl;
 
-    public void setIdProduct(Integer idProduct) {
-        this.idProduct = idProduct;
-    }
+    public Integer getIdProduct() { return idProduct; }
+    public void setIdProduct(Integer idProduct) { this.idProduct = idProduct; }
 
-    public Integer getProductCode() {
-        return productCode;
-    }
+    public Integer getProductCode() { return productCode; }
+    public void setProductCode(Integer productCode) { this.productCode = productCode; }
 
-    public void setProductCode(Integer productCode) {
-        this.productCode = productCode;
-    }
+    public BigDecimal getPrice() { return price; }
+    public void setPrice(BigDecimal price) { this.price = price; }
 
-    public BigDecimal getPrice() {
-        return price;
-    }
+    public String getProductName() { return productName; }
+    public void setProductName(String productName) { this.productName = productName; }
 
-    public void setPrice(BigDecimal price) {
-        this.price = price;
-    }
+    public Integer getStock() { return stock; }
+    public void setStock(Integer stock) { this.stock = stock; }
 
-    public String getProductName() {
-        return productName;
-    }
+    public StateProduct getStateProduct() { return stateProduct; }
+    public void setStateProduct(StateProduct stateProduct) { this.stateProduct = stateProduct; }
 
-    public void setProductName(String productName) {
-        this.productName = productName;
-    }
-
-    public Integer getStock() {
-        return Stock;
-    }
-
-    public void setStock(Integer stock) {
-        Stock = stock;
-    }
-
-    public StateProduct getStateProduct() {
-        return stateProduct;
-    }
-
-    public void setStateProduct(StateProduct stateProduct) {
-        this.stateProduct = stateProduct;
-    }
+    public String getImageUrl() { return imageUrl; }
+    public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
 }

@@ -15,7 +15,7 @@ public class Sales {
     private Integer idSale;
 
     @Column(name = "sale_code")
-    private Integer saleCode;
+    private Long saleCode;
 
     @Column(name = "sale_date")
     @Temporal(TemporalType.DATE)
@@ -84,11 +84,11 @@ public class Sales {
         this.saleDate = saleDate;
     }
 
-    public Integer getSaleCode() {
+    public Long getSaleCode() {
         return saleCode;
     }
 
-    public void setSaleCode(Integer saleCode) {
+    public void setSaleCode(Long saleCode) {
         this.saleCode = saleCode;
     }
 }

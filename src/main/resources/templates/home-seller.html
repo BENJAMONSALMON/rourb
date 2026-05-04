@@ -1,20 +1,626 @@
-<script>
-    try {
-    const token = localStorage.getItem("token");
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ROURB – Panel Vendedor</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700&display=swap');
 
-    if (!token) {
-        window.location.href = "/login";
-    }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    const payloadBase64 = token.split('.')[1];
-    const payloadJson = atob(payloadBase64);
-    const payload = JSON.parse(payloadJson);
+        :root {
+          --teal:  #3dbfbf;
+          --teal2: #2aa0a0;
+          --red:   #e84040;
+          --dark:  #080808;
+          --nav:   #101010;
+          --card:  #131313;
+          --card2: #1a1a1a;
+          --border:#222;
+          --text:  #e8e8e8;
+          --muted: #666;
+          --green: #2ecc71;
+        }
 
-    console.log("PAYLOAD:", payload);
+        html, body {
+          height: 100%;
+          font-family: 'Outfit', sans-serif;
+          background: radial-gradient(ellipse at 15% 40%, #0c2f2f 0%, #060f0f 50%, #020808 100%);
+          color: var(--text);
+        }
 
-} catch (e) {
-    console.error("TOKEN INVÁLIDO:", e);
-    localStorage.removeItem("token");
-    window.location.href = "/login";
+        /* ── NAVBAR ── */
+        .navbar {
+          position: sticky;
+          top: 0;
+          z-index: 100;
+          background: rgba(10,10,10,0.92);
+          backdrop-filter: blur(14px);
+          border-bottom: 1px solid var(--border);
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          padding: 0 24px;
+          height: 60px;
+        }
+
+        .nav-brand {
+          font-family: 'Bebas Neue', sans-serif;
+          font-size: 1.7rem;
+          letter-spacing: 4px;
+          color: var(--text);
+          text-decoration: none;
+          margin-right: 16px;
+        }
+        .nav-brand span { color: var(--teal); }
+
+        .nav-links { display: flex; align-items: center; gap: 4px; flex: 1; }
+
+        .nav-link {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          padding: 7px 14px;
+          border-radius: 8px;
+          border: none;
+          background: transparent;
+          color: var(--muted);
+          font-family: 'Outfit', sans-serif;
+          font-size: 0.82rem;
+          font-weight: 500;
+          cursor: pointer;
+          transition: all 0.18s;
+          text-decoration: none;
+        }
+        .nav-link:hover { background: rgba(255,255,255,0.05); color: var(--text); }
+        .nav-link.active {
+          background: rgba(61,191,191,0.15);
+          color: var(--teal);
+          border: 1px solid rgba(61,191,191,0.25);
+        }
+
+        .nav-spacer { flex: 1; }
+
+        .nav-user-pill {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          background: var(--card);
+          border: 1px solid var(--border);
+          border-radius: 999px;
+          padding: 5px 12px 5px 8px;
+          font-size: 0.8rem;
+        }
+        .user-avatar {
+          width: 26px;
+          height: 26px;
+          background: linear-gradient(135deg, var(--teal), var(--teal2));
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-weight: 700;
+          font-size: 0.65rem;
+          color: #000;
+        }
+        .user-role {
+          font-size: 0.65rem;
+          background: rgba(61,191,191,0.15);
+          color: var(--teal);
+          border-radius: 999px;
+          padding: 2px 7px;
+          font-weight: 600;
+          letter-spacing: 0.05em;
+          text-transform: uppercase;
+        }
+
+        .btn-logout {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          padding: 7px 14px;
+          border-radius: 8px;
+          border: 1.5px solid var(--border);
+          background: transparent;
+          color: var(--muted);
+          font-family: 'Outfit', sans-serif;
+          font-size: 0.8rem;
+          font-weight: 500;
+          cursor: pointer;
+          transition: all 0.18s;
+        }
+        .btn-logout:hover { border-color: var(--red); color: var(--red); }
+
+        /* ── MAIN ── */
+        .main { max-width: 1280px; margin: 0 auto; padding: 40px 28px; }
+
+        /* Section title */
+        .page-header {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin-bottom: 28px;
+        }
+        .page-title {
+          font-family: 'Bebas Neue', sans-serif;
+          font-size: 2rem;
+          letter-spacing: 3px;
+        }
+
+        .btn-action {
+          display: flex;
+          align-items: center;
+          gap: 7px;
+          padding: 10px 18px;
+          border-radius: 8px;
+          border: none;
+          font-family: 'Outfit', sans-serif;
+          font-size: 0.82rem;
+          font-weight: 600;
+          letter-spacing: 0.05em;
+          cursor: pointer;
+          transition: all 0.2s;
+        }
+        .btn-teal { background: linear-gradient(135deg, var(--teal), var(--teal2)); color: #000; }
+        .btn-teal:hover { filter: brightness(1.1); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(61,191,191,0.3); }
+
+        /* ── TABLE ── */
+        .table-wrap {
+          background: var(--card);
+          border: 1px solid var(--border);
+          border-radius: 16px;
+          overflow: hidden;
+        }
+
+        table {
+          width: 100%;
+          border-collapse: collapse;
+        }
+
+        thead {
+          background: rgba(61,191,191,0.06);
+          border-bottom: 1px solid var(--border);
+        }
+
+        th {
+          padding: 14px 18px;
+          text-align: left;
+          font-size: 0.72rem;
+          font-weight: 600;
+          letter-spacing: 0.12em;
+          text-transform: uppercase;
+          color: var(--muted);
+        }
+
+        td {
+          padding: 14px 18px;
+          font-size: 0.88rem;
+          color: var(--text);
+          border-bottom: 1px solid rgba(255,255,255,0.04);
+          vertical-align: middle;
+        }
+
+        tr:last-child td { border-bottom: none; }
+
+        tbody tr {
+          transition: background 0.15s;
+        }
+        tbody tr:hover { background: rgba(255,255,255,0.02); }
+
+        .td-id { color: var(--muted); font-size: 0.8rem; }
+
+        .td-price { color: var(--teal); font-family: 'Bebas Neue'; font-size: 1.05rem; letter-spacing: 1px; }
+
+        .td-stock-ok { color: var(--green); font-weight: 600; }
+        .td-stock-low { color: #f39c12; font-weight: 600; }
+        .td-stock-out { color: var(--red); font-weight: 600; }
+
+        .action-btns { display: flex; gap: 6px; }
+
+        .btn-sm {
+          padding: 5px 12px;
+          border-radius: 6px;
+          border: none;
+          font-family: 'Outfit', sans-serif;
+          font-size: 0.75rem;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.15s;
+        }
+        .btn-edit { background: rgba(61,191,191,0.12); color: var(--teal); border: 1px solid rgba(61,191,191,0.2); }
+        .btn-edit:hover { background: rgba(61,191,191,0.22); }
+        .btn-del { background: rgba(232,64,64,0.08); color: var(--red); border: 1px solid rgba(232,64,64,0.15); }
+        .btn-del:hover { background: rgba(232,64,64,0.18); }
+
+        /* Empty row */
+        .empty-row td {
+          text-align: center;
+          padding: 60px 20px;
+          color: var(--muted);
+        }
+
+        /* ── TABS active section ── */
+        .section { display: none; }
+        .section.active { display: block; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+
+        /* Stats row */
+        .stats-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+          gap: 16px;
+          margin-bottom: 28px;
+        }
+
+        .stat-card {
+          background: var(--card);
+          border: 1px solid var(--border);
+          border-radius: 14px;
+          padding: 20px;
+          display: flex;
+          flex-direction: column;
+          gap: 6px;
+        }
+        .stat-label { font-size: 0.72rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; }
+        .stat-value { font-family: 'Bebas Neue'; font-size: 2rem; letter-spacing: 2px; color: var(--teal); }
+        .stat-sub { font-size: 0.75rem; color: var(--muted); }
+
+        @media (max-width: 768px) {
+          .navbar { padding: 0 12px; gap: 4px; }
+          .nav-link span { display: none; }
+          .nav-user-pill .user-role { display: none; }
+          .main { padding: 24px 14px; }
+        }
+        .modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  backdrop-filter: blur(6px);
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
 }
+
+.modal-box {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 24px;
+  width: 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.modal-box input {
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--card2);
+  color: var(--text);
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+        .btn-cancel {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--muted);
+}
+
+.btn-cancel:hover {
+  border-color: var(--red);
+  color: var(--red);
+}
+    </style>
+</head>
+<body>
+
+<nav class="navbar">
+    <a class="nav-brand" href="#">RO<span>URB</span></a>
+
+    <div class="nav-links">
+        <button class="nav-link" onclick="showSection('productos', this)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/>
+            </svg>
+            <span>Productos</span>
+        </button>
+        <button class="nav-link" onclick="showSection('ventas', this)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+            </svg>
+            <span>Ventas</span>
+        </button>
+        <button class="nav-link active" onclick="showSection('detalles', this)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
+            </svg>
+            <span>Detalles</span>
+        </button>
+        <button class="nav-link" onclick="showSection('clientes', this)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+            <span>Clientes</span>
+        </button>
+    </div>
+
+    <div class="nav-spacer"></div>
+
+    <div class="nav-user-pill">
+        <div class="user-avatar" id="seller-avatar">B</div>
+        <span id="seller-name">benja</span>
+        <span class="user-role">Seller</span>
+    </div>
+
+    <button class="btn-logout" onclick="location.href='/login'">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+            <polyline points="16 17 21 12 16 7"/>
+            <line x1="21" y1="12" x2="9" y2="12"/>
+        </svg>
+        Salir
+    </button>
+</nav>
+
+<div class="main">
+
+    <div class="section" id="sec-productos">
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">Total Productos</div>
+                <div class="stat-value" id="total-products">0</div>
+                <div class="stat-sub">En catálogo</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Stock Total</div>
+                <div class="stat-value" id="total-stock">0</div>
+                <div class="stat-sub">Unidades disponibles</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Productos Bajos</div>
+                <div class="stat-value" id="low-stock">0</div>
+                <div class="stat-sub">Requieren restock</div>
+            </div>
+        </div>
+
+        <div class="page-header">
+            <h1 class="page-title">Mis Productos</h1>
+            <button class="btn-action btn-teal" onclick="openProductModal()">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                </svg>
+                Nuevo Producto
+            </button>
+        </div>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Imagen</th>
+                    <th>Nombre</th>
+                    <th>Precio</th>
+                    <th>Stock</th>
+                    <th>Acciones</th>
+                </tr>
+                </thead>
+                <tbody id="tbody-productos">
+                <tr class="empty-row">
+                    <td colspan="5">Cargando productos...</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="section" id="sec-ventas">
+        <div class="page-header">
+            <h1 class="page-title">Ventas</h1>
+            <button class="btn-action btn-teal" onclick="openSaleModal()">
+                + Nueva Venta
+            </button>
+        </div>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Código</th>
+                    <th>Cliente</th>
+                    <th>Fecha</th>
+                    <th>Total</th>
+                    <th>Acciones</th>
+                </tr>
+                </thead>
+                </thead>
+                <tbody>
+                <tr class="empty-row"><td colspan="6">No hay ventas registradas aún.</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="section active" id="sec-detalles">
+        <div class="page-header">
+            <h1 class="page-title">Detalles de Venta</h1>
+            <button class="btn-action btn-teal" onclick="openDetailModal()">+ Agregar Detalle</button>
+        </div>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                <tr>
+                    <th>ID</th><th>Producto</th><th>Venta</th><th>Cliente</th>
+                    <th>Cantidad</th><th>Precio Unit.</th><th>Subtotal</th><th>Acciones</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr class="empty-row"><td colspan="8">No hay detalles de venta registrados.</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="section" id="sec-clientes">
+        <div class="page-header">
+            <h1 class="page-title">Clientes</h1>
+        </div>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Cliente</th>
+                    <th>Estado</th>
+                    <th>Total gastado</th>
+                    <th>Acciones</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr class="empty-row"><td colspan="5">No hay clientes registrados aún.</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+
+<script>
+    function showSection(name, btn) {
+      document.querySelectorAll('.section').forEach(sec => {
+        sec.classList.remove('active');
+      });
+
+      document.querySelectorAll('.nav-link').forEach(link => {
+        link.classList.remove('active');
+      });
+
+      document.getElementById('sec-' + name).classList.add('active');
+
+      btn.classList.add('active');
+    }
 </script>
+
+<script>console.log("user_id:", localStorage.getItem("user_id"));</script>
+
+<div id="modal-product" class="modal">
+    <div class="modal-box">
+
+        <h2 id="modal-title">Nuevo Producto</h2>
+
+        <input type="hidden" id="prod-id">
+
+        <label>Nombre</label>
+        <input type="text" id="prod-name" placeholder="Nombre del producto">
+
+        <label>Precio</label>
+        <input type="number" id="prod-price" placeholder="Precio">
+
+        <label>Stock</label>
+        <input type="number" id="prod-stock" placeholder="Stock">
+
+        <label>Código</label>
+        <input type="number" id="prod-code" placeholder="Código del producto">
+
+        <label>Estado</label>
+        <select id="prod-state">
+            <option value="CONTINUED">Activo</option>
+            <option value="DISCONTINUED">Descontinuado</option>
+        </select>
+
+        <label>Imagen</label>
+        <input type="file" id="prod-file" accept="image/*">
+        <img id="preview" style="width:60px;display:none;margin-top:10px;">
+
+        <div class="modal-actions">
+            <button class="btn-action btn-teal" onclick="saveProduct()">Guardar</button>
+            <button class="btn-action btn-cancel" onclick="closeProductModal()">Cancelar</button>
+        </div>
+
+    </div>
+</div>
+
+<script src="js/products.js"></script>
+<script src="js/sales.js"></script>
+<script src="js/details.js"></script>
+
+<div id="modal-sale" class="modal">
+    <div class="modal-box">
+
+        <h2 id="modal-sale-title">Nueva Factura</h2>
+
+        <input type="hidden" id="sale-id">
+
+        <label>Código de Factura</label>
+        <input type="number" id="sale-code">
+
+        <label>Total</label>
+        <input type="number" id="sale-total">
+
+        <label>Estado</label>
+        <select id="sale-state">
+            <option value="ACTIVE">Activa</option>
+            <option value="IN_PROCESS">En proceso</option>
+        </select>
+
+        <label>Cliente ID</label>
+        <select id="sale-client"></select>
+
+        <label>Usuario ID</label>
+        <input type="number" id="sale-user">
+
+        <div class="modal-actions">
+            <button class="btn-action btn-teal" onclick="saveSale()">Guardar</button>
+            <button class="btn-action btn-cancel" onclick="closeSaleModal()">Cancelar</button>
+        </div>
+
+    </div>
+</div>
+
+<div id="modal-detail" class="modal">
+    <div class="modal-box">
+        <h2 id="detail-modal-title">Nuevo Detalle</h2>
+
+        <input type="hidden" id="detail-id">
+
+        <label>Código de Detalle</label>
+        <input type="number" id="detail-code" placeholder="Código">
+
+        <label>Producto</label>
+        <select id="detail-product" onchange="autoFillPrice()"></select>
+
+        <label>Venta / Factura</label>
+        <select id="detail-sale"></select>
+
+        <label>Cantidad</label>
+        <input type="number" id="detail-amount" placeholder="Cantidad" oninput="calcSubtotal()">
+
+        <label>Precio Unitario</label>
+        <input type="number" id="detail-unit-price" placeholder="Precio unitario" step="0.01" oninput="calcSubtotal()">
+
+        <label>Subtotal (calculado)</label>
+        <input type="number" id="detail-subtotal" placeholder="Subtotal" step="0.01" readonly
+               style="opacity:0.6;cursor:not-allowed;">
+
+        <div class="modal-actions">
+            <button class="btn-action btn-teal" onclick="saveDetail()">Guardar</button>
+            <button class="btn-action btn-cancel" onclick="closeDetailModal()">Cancelar</button>
+        </div>
+    </div>
+</div>
+
+
+</body>
+</html>

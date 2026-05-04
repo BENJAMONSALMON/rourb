@@ -2,12 +2,12 @@ package com.in5bv.rourb.service;
 
 import com.in5bv.rourb.entity.Sales;
 import com.in5bv.rourb.repository.SaleRepository;
-import com.in5bv.rourb.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+
 @Service
-public class SaleServiceImplement implements SaleService{
+public class SaleServiceImplement implements SaleService {
 
     private final SaleRepository saleRepository;
 
@@ -28,13 +28,20 @@ public class SaleServiceImplement implements SaleService{
 
     @Override
     public Sales getSaleById(Integer id) {
-        return saleRepository.findById(id).orElseThrow(() -> new RuntimeException("Sale not found with id: " + id));
+        return saleRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Sale not found with id: " + id));
     }
 
     @Override
-    public Sales updateSales(Integer idUpdate, Sales user) {
-        Sales existing = saleRepository.findById(idUpdate).orElseThrow(() -> new RuntimeException("Sale not found with id: " + idUpdate));
-        return null;
+    public Sales updateSales(Integer idUpdate, Sales updated) {
+        Sales existing = getSaleById(idUpdate);
+        existing.setSaleCode(updated.getSaleCode());
+        existing.setSaleDate(updated.getSaleDate());
+        existing.setTotal(updated.getTotal());
+        existing.setStateSale(updated.getStateSale());
+        existing.setClient(updated.getClient());
+        existing.setUser(updated.getUser());
+        return saleRepository.save(existing);
     }
 
     @Override
